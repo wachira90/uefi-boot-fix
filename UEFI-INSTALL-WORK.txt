@@ -1,0 +1,215 @@
+
+===================
+Reinstall the GRUB boot loader to your Ubuntu installation in EFI mode this way ...
+
+Boot from the Ubuntu installation medium and select 'Try Ubuntu without installing'.
+(Boot your install medium in EFI mode, select the Ubuntu entry with UEFI in front.)
+
+Once you are on the Live desktop, open a terminal and execute these commands :
+//---------------------
+sudo mount /dev/nvme0n1p8 /mnt
+sudo mount /dev/nvme0n1p1 /mnt/boot/efi
+for i in /dev /dev/pts /proc /sys /run; do sudo mount -B $i /mnt$i; done
+sudo chroot /mnt
+grub-install /dev/nvme0n1
+update-grub
+
+//------------------
+
+Note : sdX = disk | sdXX = efi partition | sdXY = system partition
+
+===================
+
+
+Disk /dev/nvme0n1: 477 GiB, 512110190592 bytes, 1000215216 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: 4484C3B5-2703-4A7E-B800-027C8562BD2C
+
+Device             Start        End   Sectors   Size Type
+/dev/nvme0n1p1      2048     616447    614400   300M EFI System 	<==uefi folder (/boot/efi)
+/dev/nvme0n1p2    616448     878591    262144   128M Microsoft reserved
+/dev/nvme0n1p3    878592  243373055 242494464 115.6G Microsoft basic data
+/dev/nvme0n1p4 485867520  895485951 409618432 195.3G Microsoft basic data
+/dev/nvme0n1p5 895485952  961001471  65515520  31.2G Microsoft basic data
+/dev/nvme0n1p6 961003520  962846719   1843200   900M Windows recovery environment
+/dev/nvme0n1p7 962846720 1000214527  37367808  17.8G Windows recovery environment
+/dev/nvme0n1p8 243374080  485867519 242493440 115.6G Linux filesystem       <= /home/docker
+
+========================================
+
+root@ubuntu:~# sudo mount /dev/nvme0n1p8 /mnt
+root@ubuntu:~# sudo mount /dev/nvme0n1p1 /mnt/boot/efi
+root@ubuntu:~# for i in /dev /dev/pts /proc /sys /run; do sudo mount -B $i /mnt$i; done
+root@ubuntu:~# sudo chroot /mnt
+root@ubuntu:/# grub-install /dev/nvme0n1
+Installing for x86_64-efi platform.
+Installation finished. No error reported.
+root@ubuntu:/# update-grub
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-5.4.0-72-generic
+Found initrd image: /boot/initrd.img-5.4.0-72-generic
+Found linux image: /boot/vmlinuz-5.0.0-23-generic
+Found initrd image: /boot/initrd.img-5.0.0-23-generic
+Found linux image: /boot/vmlinuz-4.15.0-142-generic
+Found initrd image: /boot/initrd.img-4.15.0-142-generic
+Found Windows Boot Manager on /dev/nvme0n1p1@/EFI/Microsoft/Boot/bootmgfw.efi
+Adding boot menu entry for EFI firmware configuration
+done
+root@ubuntu:/#
+
+===================================
+
+
+sudo mount /dev/nvme0n1p8 /mnt
+sudo mount /dev/nvme0n1p1 /mnt/boot/efi
+
+
+
+sudo mount -o bind /dev /mnt/dev
+sudo mount -o bind /proc /mnt/proc
+sudo mount -o bind /sys /mnt/sys
+sudo mount -o bind /run /mnt/run
+sudo chroot /mnt/
+sudo apt-get install --reinstall grub-efi
+sudo update-grub
+
+
+===================REAL========================
+
+
+root@ubuntu:~# sudo mount /dev/nvme0n1p8 /mnt
+root@ubuntu:~# sudo mount /dev/nvme0n1p1 /mnt/boot/efi
+root@ubuntu:~# sudo mount -o bind /dev /mnt/dev
+root@ubuntu:~# sudo mount -o bind /proc /mnt/proc
+root@ubuntu:~# sudo mount -o bind /sys /mnt/sys
+root@ubuntu:~# sudo mount -o bind /run /mnt/run
+root@ubuntu:~# sudo chroot /mnt/
+root@ubuntu:/# sudo apt-get install --reinstall grub-efi
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  grub-pc-bin lib32gcc1 libc6-i386 libcublas-11-3
+Use 'sudo apt autoremove' to remove them.
+The following additional packages will be installed:
+  grub-common grub-efi-amd64 grub-efi-amd64-bin grub-efi-amd64-signed grub-pc-bin grub2-common
+Suggested packages:
+  multiboot-doc grub-emu xorriso desktop-base
+The following packages will be REMOVED:
+  grub-gfxpayload-lists grub-pc
+The following NEW packages will be installed:
+  grub-efi grub-efi-amd64
+The following packages will be upgraded:
+  grub-common grub-efi-amd64-bin grub-efi-amd64-signed grub-pc-bin grub2-common
+5 upgraded, 2 newly installed, 2 to remove and 152 not upgraded.
+Need to get 4,218 kB of archives.
+After this operation, 371 kB disk space will be freed.
+Do you want to continue? [Y/n] y
+Get:1 http://th.archive.ubuntu.com/ubuntu bionic-updates/main amd64 grub-efi-amd64 amd64 2.02-2ubuntu8.21 [47.9 kB]
+Get:2 http://th.archive.ubuntu.com/ubuntu bionic-updates/main amd64 grub2-common amd64 2.02-2ubuntu8.21 [534 kB]
+Get:3 http://th.archive.ubuntu.com/ubuntu bionic-updates/main amd64 grub-pc-bin amd64 2.02-2ubuntu8.21 [901 kB]
+Get:4 http://th.archive.ubuntu.com/ubuntu bionic-updates/main amd64 grub-efi-amd64-signed amd64 1.93.24+2.02-2ubuntu8.21 [303 kB]
+Get:5 http://th.archive.ubuntu.com/ubuntu bionic-updates/main amd64 grub-efi-amd64-bin amd64 2.02-2ubuntu8.21 [656 kB]
+Get:6 http://th.archive.ubuntu.com/ubuntu bionic-updates/main amd64 grub-common amd64 2.02-2ubuntu8.21 [1,774 kB]
+Get:7 http://th.archive.ubuntu.com/ubuntu bionic-updates/main amd64 grub-efi amd64 2.02-2ubuntu8.21 [2,596 B]
+Fetched 4,218 kB in 2s (1,965 kB/s)
+Preconfiguring packages ...
+E: Can not write log (Is /dev/pts mounted?) - posix_openpt (19: No such device)
+dpkg: grub-pc: dependency problems, but removing anyway as you requested:
+ grub-gfxpayload-lists depends on grub-pc (>= 1.99~20101210-1ubuntu2).
+ grub-efi-amd64-signed depends on grub-efi-amd64 | grub-pc; however:
+  Package grub-efi-amd64 is not installed.
+  Package grub-pc is to be removed.
+
+(Reading database ... 240155 files and directories currently installed.)
+Removing grub-pc (2.02-2ubuntu8.17) ...
+Selecting previously unselected package grub-efi-amd64.
+(Reading database ... 240146 files and directories currently installed.)
+Preparing to unpack .../grub-efi-amd64_2.02-2ubuntu8.21_amd64.deb ...
+Unpacking grub-efi-amd64 (2.02-2ubuntu8.21) ...
+(Reading database ... 240149 files and directories currently installed.)
+Removing grub-gfxpayload-lists (0.7) ...
+(Reading database ... 240139 files and directories currently installed.)
+Preparing to unpack .../0-grub2-common_2.02-2ubuntu8.21_amd64.deb ...
+Unpacking grub2-common (2.02-2ubuntu8.21) over (2.02-2ubuntu8.17) ...
+Preparing to unpack .../1-grub-pc-bin_2.02-2ubuntu8.21_amd64.deb ...
+Unpacking grub-pc-bin (2.02-2ubuntu8.21) over (2.02-2ubuntu8.17) ...
+Preparing to unpack .../2-grub-efi-amd64-signed_1.93.24+2.02-2ubuntu8.21_amd64.deb ...
+Unpacking grub-efi-amd64-signed (1.93.24+2.02-2ubuntu8.21) over (1.93.19+2.02-2ubuntu8.17) ...
+Preparing to unpack .../3-grub-efi-amd64-bin_2.02-2ubuntu8.21_amd64.deb ...
+Unpacking grub-efi-amd64-bin (2.02-2ubuntu8.21) over (2.02-2ubuntu8.17) ...
+Preparing to unpack .../4-grub-common_2.02-2ubuntu8.21_amd64.deb ...
+Running in chroot, ignoring request.
+Running in chroot, ignoring request: daemon-reload
+Running in chroot, ignoring request: is-active
+Running in chroot, ignoring request: stop
+Unpacking grub-common (2.02-2ubuntu8.21) over (2.02-2ubuntu8.17) ...
+Running in chroot, ignoring request: daemon-reload
+Selecting previously unselected package grub-efi.
+Preparing to unpack .../5-grub-efi_2.02-2ubuntu8.21_amd64.deb ...
+Unpacking grub-efi (2.02-2ubuntu8.21) ...
+Processing triggers for ureadahead (0.100.0-21) ...
+Processing triggers for install-info (6.5.0.dfsg.1-2) ...
+Setting up grub-common (2.02-2ubuntu8.21) ...
+Installing new version of config file /etc/grub.d/10_linux ...
+update-rc.d: warning: start and stop actions are no longer supported; falling back to defaults
+Running in chroot, ignoring request: daemon-reload
+Running in chroot, ignoring request.
+Running in chroot, ignoring request: daemon-reload
+Running in chroot, ignoring request: is-active
+Running in chroot, ignoring request: start
+Processing triggers for systemd (237-3ubuntu10.38) ...
+Running in chroot, ignoring request: daemon-reload
+Processing triggers for man-db (2.8.3-2ubuntu0.1) ...
+Setting up grub-efi-amd64-bin (2.02-2ubuntu8.21) ...
+Setting up grub-pc-bin (2.02-2ubuntu8.21) ...
+Setting up grub2-common (2.02-2ubuntu8.21) ...
+Setting up grub-efi-amd64 (2.02-2ubuntu8.21) ...
+Installing for x86_64-efi platform.
+Installation finished. No error reported.
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-5.4.0-72-generic
+Found initrd image: /boot/initrd.img-5.4.0-72-generic
+Found linux image: /boot/vmlinuz-5.0.0-23-generic
+Found initrd image: /boot/initrd.img-5.0.0-23-generic
+Found linux image: /boot/vmlinuz-4.15.0-142-generic
+Found initrd image: /boot/initrd.img-4.15.0-142-generic
+Found Windows Boot Manager on /dev/nvme0n1p1@/EFI/Microsoft/Boot/bootmgfw.efi
+Adding boot menu entry for EFI firmware configuration
+done
+Setting up grub-efi-amd64-signed (1.93.24+2.02-2ubuntu8.21) ...
+Installing for x86_64-efi platform.
+Installation finished. No error reported.
+Setting up grub-efi (2.02-2ubuntu8.21) ...
+Processing triggers for shim-signed (1.37~18.04.3+15+1533136590.3beb971-0ubuntu1) ...
+Secure Boot not enabled on this system.
+root@ubuntu:/# sudo update-grub
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-5.4.0-72-generic
+Found initrd image: /boot/initrd.img-5.4.0-72-generic
+Found linux image: /boot/vmlinuz-5.0.0-23-generic
+Found initrd image: /boot/initrd.img-5.0.0-23-generic
+Found linux image: /boot/vmlinuz-4.15.0-142-generic
+Found initrd image: /boot/initrd.img-4.15.0-142-generic
+Found Windows Boot Manager on /dev/nvme0n1p1@/EFI/Microsoft/Boot/bootmgfw.efi
+Adding boot menu entry for EFI firmware configuration
+done
+root@ubuntu:/# sudo update-grub
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-5.4.0-72-generic
+Found initrd image: /boot/initrd.img-5.4.0-72-generic
+Found linux image: /boot/vmlinuz-5.0.0-23-generic
+Found initrd image: /boot/initrd.img-5.0.0-23-generic
+Found linux image: /boot/vmlinuz-4.15.0-142-generic
+Found initrd image: /boot/initrd.img-4.15.0-142-generic
+Found Windows Boot Manager on /dev/nvme0n1p1@/EFI/Microsoft/Boot/bootmgfw.efi
+Adding boot menu entry for EFI firmware configuration
+done
+root@ubuntu:/# reboot
